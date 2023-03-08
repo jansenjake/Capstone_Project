@@ -22,12 +22,12 @@ route.post('/login', bodyParser.json(), (req, res) => {
     user.login(req, res);
 });
 
-route.get('/user', (req, res) => {
-    user.fetchUsers(req, res);
-});
-
 route.post('/register', bodyParser.json(), (req, res) => {
     user.createUser(req, res);
+});
+
+route.get('/user', (req, res) => {
+    user.fetchUsers(req, res);
 });
 
 route.delete('/user/:id', (req, res) => {
@@ -37,7 +37,6 @@ route.delete('/user/:id', (req, res) => {
 route.put('/user/:id', bodyParser.json(), (req, res) => {
     user.updateUser(req, res);
 });
-
 
 route.get('/product', (req, res) => {
     product.fetchProducts(req, res);

@@ -2,15 +2,21 @@ const express = require('express');
 
 const route = express.Router();
 
+const path = require('path');
+
 const bodyParser = require('body-parser');
 
-route.get('/', async (req, res) => {
-    res.status(200).sendFile(path.join(__dirname, '../views/index.html'));
-})
+const {User, Product} = require('../model');
 
-const user = require('../model');
+const product = new Product();
 
 const user = new User();
+
+
+route.get('/', async (req, res) => {
+    res.status(200).sendFile(path.join(__dirname, '../view/index.html'));
+})
+
 
 route.post('/login', bodyParser.json(), (req, res) => {
     user.login(req, res);
@@ -32,9 +38,6 @@ route.put('/user/:id', bodyParser.json(), (req, res) => {
     user.updateUser(req, res);
 });
 
-const product = require('../model');
-
-const product = new Product();
 
 route.get('/product', (req, res) => {
     product.fetchProducts(req, res);
@@ -48,4 +51,8 @@ route.put('/product/:id', bodyParser.json(), (req, res) => {
     product.updateProduct(req, res);
 });
 
-modules.exports = router;
+route.delete('/product/:id', (req, res) => {
+    product.deleteProduct(req, res);
+});
+
+module.exports = route;

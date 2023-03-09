@@ -38,6 +38,11 @@ route.put('/user/:id', bodyParser.json(), (req, res) => {
     user.updateUser(req, res);
 });
 
+route.post('/user', bodyParser.json(), (req, res) => {
+    user.addUser(req, res);
+});
+
+
 route.get('/product', (req, res) => {
     product.fetchProducts(req, res);
 });
@@ -53,5 +58,10 @@ route.put('/product/:id', bodyParser.json(), (req, res) => {
 route.delete('/product/:id', (req, res) => {
     product.deleteProduct(req, res);
 });
+
+route.post('/product', bodyParser.json(), (req, res) => {
+    product.addProduct(req, res);
+});
+
 
 module.exports = route;

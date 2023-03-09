@@ -9,10 +9,12 @@ let {createToken} = require('../middleware/authenticatedUser');
 
 class User {
     login(req, res) {
-        const {emailAddress, password} = req.body;
+        const {emailAdd, password} = req.body;
         const strQry = `SELECT userID, firstName, lastName, 
-        emailAddress, userPass, gender, userRole, 
-        userProfile FROM Users WHERE emailAddress = ${emailAddress};`;
+        emailAdd, userPass, gender, userRole, 
+        userProfile FROM Users WHERE emailAdd = ${emailAdd};`;
+
+
 
         dataBase.query(strQry, async (err, data) => {
             if (err) throw err;
@@ -21,7 +23,7 @@ class User {
             } else {
                 await compare(userPass, data[0].userPass, (cErr, cResult) => {
                     const jwToken = createToken({
-                        emailAddress,
+                        emailAdd,
                         userPass,
                     });
                     res.cookie('authenticUser', jwToken, {
@@ -46,7 +48,7 @@ class User {
 
     fetchUsers(req, res) {
         const strQry = `SELECT userID, firstName, lastName, 
-        emailAddress, gender, userRole, userProfile FROM Users;`;
+        emailAdd, gender, userRole, userProfile FROM Users;`;
         dataBase.query(strQry, (err, data) => {
             if (err) throw err;
             else res.status(200).json({ result: data });
@@ -54,7 +56,7 @@ class User {
     }
     fetchUser(req, res) {
         const strQry = `SELECT
-        userID, firstName, lastName, emailAddress, 
+        userID, firstName, lastName, emailAdd, 
         gender, userRole, userProfile 
         FROM Users WHERE userID = ?;`;
         dataBase.query(strQry, [req.params.id], (err, data) => {
@@ -62,11 +64,35 @@ class User {
             else res.status(200).json({ result: data });
         });
     }
+    addUser(req, res) {
+        const Users = req.body;
+        const strQry = 
+        `INSERT INTO Users SET ?;
+        `;
+        dataBase.query(strQry, Users,
+            (err) => {
+                if (err){
+                    console.log(err);
+                    res.status(400).json({ err: `Sorry, something went wrong.` });
+                }else{
+                    res.status(200).json({ msg: `User added successfully` });
+                }
+            }
+        );
+    }
+    deleteUser(req, res) {
+        const strQry = 
+        `DELETE FROM Users WHERE userID = ?;`;
+        dataBase.query(strQry,[req.params.id], (err)=> {
+            if(err) console.log(err), res.status(400).json({err: 'Could not delete user.'}) ;
+            res.status(200).json({msg: 'A user was deleted.'});
+        })
+    }
 };
 
 class Product {
     fetchProducts(req, res) {
-        const strQry = `SELECT id, prodName, prodDescription, category, price, prodQuantity, imgURL
+        const strQry = `SELECT *
         FROM Products;`;
         dataBase.query(strQry, (err, results)=> {
             if(err) throw err;
@@ -74,11 +100,7 @@ class Product {
         });
     }
     fetchProduct(req, res) {
-        const strQry = `SELECT id, prodName, 
-        prodDescription, category, 
-        price, prodQuantity, imgURL
-        FROM products
-        WHERE id = ?;`;
+        const strQry = `SELECT * From Products  WHERE id = ?;`;
         dataBase.query(strQry, [req.params.id], (err, results)=> {
             if(err) throw err;
             res.status(200).json({results: results})
@@ -86,12 +108,14 @@ class Product {
   
     }
     addProduct(req, res) {
+        const product = req.body
         const strQry = 
         `INSERT INTO Products SET ?;
         `;
-        dataBase.query(strQry,[req.body],
+        dataBase.query(strQry,product,
             (err)=> {
                 if(err){
+                    console.log(err);
                     res.status(400).json({err: 'Unable to insert a new record.'});
                 }else {
                     res.status(200).json({msg: 'Product saved!'});

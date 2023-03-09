@@ -50,7 +50,8 @@ class User {
         const strQry = `SELECT userID, firstName, lastName, 
         emailAdd, gender, userRole, userProfile FROM Users;`;
         dataBase.query(strQry, (err, data) => {
-            if (err) throw err;
+            if (err) throw err ,console.log(err);
+            
             else res.status(200).json({ result: data });
         });
     }
